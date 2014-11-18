@@ -86,7 +86,7 @@ class IMAP_Copy(object):
 
     def copy(self, source_mailbox, destination_mailbox, skip, limit):
         # Connect to source and open mailbox
-        status, data = self._conn_source.select(source_mailbox, True)
+        status, data = self._conn_source.select(source_mailbox, False)
         if status != "OK":
             self.logger.error("Couldn't open source mailbox %s" %
                               source_mailbox)
@@ -144,6 +144,11 @@ class IMAP_Copy(object):
 
         self.logger.info("Copy complete %s => %s (%d out of %d mails copied)" % (
                          source_mailbox, destination_mailbox, copy_count, mail_count))
+
+        # delete the mail that has been copy
+        typ, response = self._conn_source.store(msg_num, '+FLAGS', r'(\Deleted)')
+        typ, response = self._conn_source.expunge()
+        self.logger.info("Delete the mail %s from %s" % (message_md5, source_mailbox))
 
     def run(self):
         try:
