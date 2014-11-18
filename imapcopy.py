@@ -137,6 +137,11 @@ class IMAP_Copy(object):
                 self.logger.info("Copy mail %d of %d (copy_count=%d, md5(message)=%s)" % (
                     progress_count, mail_count, copy_count, message_md5))
 
+                # delete the mail that has been copy
+                typ, response = self._conn_source.store(msg_num, '+FLAGS', r'(\Deleted)')
+                typ, response = self._conn_source.expunge()
+                self.logger.info("Delete the mail %s from %s" % (message_md5, source_mailbox))
+
                 if limit > 0 and copy_count >= limit:
                     self.logger.info("Copy limit %d reached (copy_count=%d)" % (
                         limit, copy_count))
@@ -145,10 +150,7 @@ class IMAP_Copy(object):
         self.logger.info("Copy complete %s => %s (%d out of %d mails copied)" % (
                          source_mailbox, destination_mailbox, copy_count, mail_count))
 
-        # delete the mail that has been copy
-        typ, response = self._conn_source.store(msg_num, '+FLAGS', r'(\Deleted)')
-        typ, response = self._conn_source.expunge()
-        self.logger.info("Delete the mail %s from %s" % (message_md5, source_mailbox))
+        
 
     def run(self):
         try:
