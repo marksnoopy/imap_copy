@@ -64,3 +64,7 @@ Usage:
       -l N, --limit N   only copy N number of message(s)
   
 Only tested on Python 2.7.
+
+Note :
+
+1、 some imap mail such as gmail and outlook do not support the sort method, so imap_copy can not fetch mails order by date and so on.
